@@ -20,7 +20,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangochat.settings')
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
-        # URL will route to the websocket endpoint that we defined in routing.py
+        # websockets will route to the websocket URL path that we defined in routing.py
         URLRouter(
             room.routing.websocket_urlpatterns
         )

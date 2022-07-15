@@ -36,3 +36,24 @@
     </form>
 </div>
 {% endblock %}
+
+{% block scripts %}
+{{ room.slug | json_script:"json-roomname" }}
+
+<script>
+    // save the name of the room as a string
+    const roomName = JSON.parse(document.getElementById('json-roomname').textContent)
+    // create a chat socket connection by creating a websocket and passing in the websocket URL
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/' + roomName + '/'
+    );
+
+    // use the chat socket 
+    chatSocket.onmessage = function(e) {
+        console.log('on');
+    }
+    chatSocket.onclose = function(e) {
+        console.log('close');
+    }
+</script>
+{% endblock %}
