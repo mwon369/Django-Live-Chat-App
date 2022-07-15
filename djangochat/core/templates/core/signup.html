@@ -25,7 +25,7 @@
         <input type="password" name="password2" class="w-full mt-2 px-4 py-2 rounded-xl">
     </div>
 
-    <!-- use Django's Jinja engine to parse the data and detect signup errors -->
+    <!-- use Django's Jinja engine to loop through the form data and detect signup errors -->
     {% if form.errors %}
         {% for field in form %}
             {% for error in field.errors %} 
