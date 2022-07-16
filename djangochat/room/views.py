@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Room
+from .models import Room, Message
 from django.contrib.auth.decorators import login_required
 
 # use decorator to ensure user is logged in
@@ -13,4 +13,5 @@ def rooms(request):
 def room(request, slug):
     # find a specific room in the database by its slug and render it
     room = Room.objects.get(slug=slug)
-    return render(request, 'room/room.html', {'room': room})
+    messages = Message.objects.filter(room=room)[0:25]
+    return render(request, 'room/room.html', {'room': room, 'messages': messages})
