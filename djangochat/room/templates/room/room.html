@@ -55,6 +55,8 @@
             html += `<p class="font-semibold">${data.username}</p>`;
             html += `<p>${data.message}</p></div>`;
             document.querySelector('#chat-messages').innerHTML += html;
+            // call function so the most recently sent message is displayed without having to scroll
+            scrollToBottom()
         } else {
             alert('The message is empty')
         }
@@ -82,5 +84,13 @@
 
         messageInput.value = '';
     }
+
+    function scrollToBottom() {
+        const div = document.querySelector('#chat-messages');
+        div.scrollTop = div.scrollHeight;
+    }
+    
+    // call function so that the most recent messages are shown when the chat is loaded initially
+    scrollToBottom()
 </script>
 {% endblock %}
