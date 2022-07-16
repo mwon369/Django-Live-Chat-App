@@ -11,6 +11,7 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+# import modules/classes that will allow us to handle websockets
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 import room.routing

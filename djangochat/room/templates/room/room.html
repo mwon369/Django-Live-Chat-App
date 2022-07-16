@@ -31,6 +31,7 @@
 <!-- form and button to allow the user to write and send their text messages -->
 <div class="lg:w-2/4 mt-6 mx-4 lg:mx-auto p-4 bg-white rounded-xl">
     <form method="post" action="." class="flex">
+        {% csrf_token %}
         <input type="text" name="content" class="flex-1 mr-3" placeholder="Type your message here..." id="chat-message-input">
         <button class="px-5 py-3 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700" id="chat-message-submit">Send</button>
     </form>
@@ -39,21 +40,56 @@
 
 {% block scripts %}
 {{ room.slug | json_script:"json-roomname" }}
+{{ request.user.username | json_script:"json-username"}}
 
 <script>
-    // save the name of the room as a string
-    const roomName = JSON.parse(document.getElementById('json-roomname').textContent)
-    // create a chat socket connection by creating a websocket and passing in the websocket URL
+    // save the name of the room and user as strings
+    const roomName = JSON.parse(document.getElementById('json-roomname').textContent);
+    const userName = JSON.parse(document.getElementById('json-username').textContent);
+    // create a chat socket connection by creating a websocket object and passing in the websocket URL
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/' + roomName + '/'
+        `ws://${window.location.host}/ws/${roomName}/`
     );
 
     // use the chat socket 
     chatSocket.onmessage = function(e) {
         console.log('on');
+
+        // parse the data that has been submitted
+        const data = JSON.parse(e.data);
+
+        // append the message and its data to the list of messages displayed by the HTML
+        if (data.message) {
+            let html = '<div class="p-4 bg-gray-200 rounded-xl">';
+            html += `<p class="font-semibold">${data.username}</p>`;
+            html += `<p>${data.message}</p></div>`;
+            document.querySelector('#chat-messages').innerHTML += html;
+        } else {
+            alert('The message is empty')
+        }
     }
+
     chatSocket.onclose = function(e) {
         console.log('close');
+    }
+
+    // listen for the chat send button to be clicked
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        // tell JavaScript to cancel the default form submission so the sent message remains on screen
+        e.preventDefault();
+
+        // when clicked, store the message inside a variable
+        const messageInput = document.querySelector('#chat-message-input');
+        const message = messageInput.value;
+
+        // send the message to the backend
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'username': userName,
+            'room': roomName,
+        }));
+
+        messageInput.value = '';
     }
 </script>
 {% endblock %}
